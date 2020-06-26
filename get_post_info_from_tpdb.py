@@ -9,7 +9,9 @@ def saveContent(data):
   f.close
 
 # get http response
-def getResponse(url):
+def getResponseBySetId(setId):
+
+  url = 'https://theposterdb.com/set/' + setId
 
   try:
     headers = {'User-Agent':'Chrome/83.0.4103.116'}
@@ -26,23 +28,29 @@ def getResponse(url):
   # print(source)
   return html
 
-def parsingData(html):
+def printPosterNameAndUrl(html):
 
   soup = BeautifulSoup(html, 'html.parser')
 
   allPoster = soup.findAll('div', {'class':'overlay rounded'})
-  allPosterName = soup.findAll('p', {'class':'p-0 mb-1 text-break'})
+
+  maxLen = 0
 
   for poster in allPoster:
-    print(poster.find('p', {'class':'p-0 mb-1 text-break'}).text, ' = ', 'https://theposterdb.com/api/assets/',poster['data-poster-id'], sep='')
+    strLen = len(poster.find('p', {'class':'p-0 mb-1 text-break'}).text)
+    if strLen > maxLen:
+      maxLen = strLen
+
+  for poster in allPoster:
+    print(str(poster.find('p', {'class':'p-0 mb-1 text-break'}).text).ljust(maxLen), ' | ', 'https://theposterdb.com/api/assets/',poster['data-poster-id'], sep='')
 
 
 ################### run ######################
 
-url = 'https://theposterdb.com/set/253'
+setId = '253'
 
-html = getResponse(url)
+html = getResponseBySetId(setId)
 
-parsingData(html)
+printPosterNameAndUrl(html)
 
 # saveContent(html)
